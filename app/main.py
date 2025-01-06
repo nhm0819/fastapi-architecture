@@ -52,6 +52,6 @@ app = create_app()
 
 
 @app.get("/", response_class=JSONResponse)
-async def index():
-    """for ping"""
+async def root():
+    """ping"""
     return {"status": "healthy"}
