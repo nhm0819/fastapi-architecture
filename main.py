@@ -1,5 +1,3 @@
-import logging.config
-
 import uvicorn
 
 if __name__ == "__main__":

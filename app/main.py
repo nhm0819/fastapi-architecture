@@ -1,15 +1,23 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware import Middleware
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException
 
-import app.exceptions as exceptions
+import app.core.exceptions as exceptions
+from app.application.auth.v1.router import auth_router
+from app.application.user.v1.router import user_router
+from app.core.fastapi.middlewares import (
+    AuthBackend,
+    AuthenticationMiddleware,
+    SQLAlchemyMiddleware,
+)
 
 
 def init_routers(app_: FastAPI) -> None:
-    pass
+    app_.include_router(user_router)
+    app_.include_router(auth_router)
 
 
 def init_listeners(app_: FastAPI) -> None:
@@ -18,6 +26,22 @@ def init_listeners(app_: FastAPI) -> None:
     app_.add_exception_handler(HTTPException, exceptions.http_exception_handler)
     app_.add_exception_handler(
         RequestValidationError, exceptions.validation_exception_handler
+    )
+    app_.add_exception_handler(
+        exceptions.CustomException, exceptions.custom_exception_handler
+    )
+
+
+def on_auth_error(request: Request, exc: Exception):
+    status_code, error_code, message = 401, None, str(exc)
+    if isinstance(exc, Exception):
+        status_code = int(exc.code)
+        error_code = exc.error_code
+        message = exc.message
+
+    return JSONResponse(
+        status_code=status_code,
+        content={"error_code": error_code, "message": message},
     )
 
 
@@ -30,6 +54,12 @@ def make_middleware() -> list[Middleware]:
             allow_methods=["*"],
             allow_headers=["*"],
         ),
+        Middleware(
+            AuthenticationMiddleware,
+            backend=AuthBackend(),
+            on_error=on_auth_error,
+        ),
+        Middleware(SQLAlchemyMiddleware),
     ]
     return middleware
 

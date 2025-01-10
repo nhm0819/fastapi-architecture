@@ -1,8 +1,10 @@
 from typing import Generic, Type, TypeVar
 
-from core.db.session import Base, session
 from pydantic import BaseModel
 from sqlalchemy import delete, select, update
+
+from app.core.db.model import Base
+from app.core.db.session import session
 
 ModelType = TypeVar("ModelType", bound=Base)
 

@@ -1,2 +1,2 @@
-CREATE DATABASE fastapi_test;
-GRANT ALL PRIVILEGES ON fastapi_test.* TO fastapi@'%' WITH GRANT OPTION;
+CREATE DATABASE fastapi;
+GRANT ALL PRIVILEGES ON fastapi.* TO hongmin@'%' WITH GRANT OPTION;

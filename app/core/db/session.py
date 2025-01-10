@@ -3,7 +3,6 @@ from contextvars import ContextVar, Token
 from enum import Enum
 from typing import AsyncGenerator
 
-from core.configs import config
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_scoped_session,
@@ -12,6 +11,8 @@ from sqlalchemy.ext.asyncio import (
 )
 from sqlalchemy.orm import DeclarativeBase, Session
 from sqlalchemy.sql.expression import Delete, Insert, Update
+
+from app.core.configs import config
 
 session_context: ContextVar[str] = ContextVar("session_context")
 
@@ -56,9 +57,6 @@ session = async_scoped_session(
     session_factory=_async_session_factory,
     scopefunc=get_session_context,
 )
-
-
-class Base(DeclarativeBase): ...
 
 
 @asynccontextmanager
