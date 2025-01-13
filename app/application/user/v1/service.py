@@ -64,11 +64,14 @@ class UserService(UserUseCase):
             raise UserNotFoundException
 
         response = LoginResponseDTO(
-            token=TokenHelper.encode(payload={"user_id": user.id}),
+            access_token=TokenHelper.encode(
+                payload={"user_id": user.id}, expire_period=60 * 30
+            ),
             refresh_token=TokenHelper.encode(payload={"sub": "refresh"}),
+            expire_period=60 * 60 * 2,
         )
         return response
 
 
-async def get_user_service():
+def get_user_service():
     return UserService(repository=UserRepository())

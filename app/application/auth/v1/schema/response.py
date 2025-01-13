@@ -2,5 +2,5 @@ from pydantic import BaseModel, Field
 
 
 class RefreshTokenResponseDTO(BaseModel):
-    token: str = Field(..., description="Token")
+    access_token: str = Field(..., description="Access Token")
     refresh_token: str = Field(..., description="Refresh token")

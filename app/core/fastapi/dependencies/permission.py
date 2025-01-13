@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import Type
 
-from fastapi import Depends, Request
+from fastapi import Request
 from fastapi.openapi.models import APIKey, APIKeyIn
 from fastapi.security.base import SecurityBase
 from starlette import status
@@ -38,7 +38,7 @@ class IsAdmin(BasePermission):
     async def has_permission(
         self,
         request: Request,
-        usecase: UserUseCase = Depends(get_user_service),
+        usecase: UserUseCase = get_user_service(),
     ) -> bool:
         user_id = request.user.id
         if not user_id:
@@ -61,5 +61,8 @@ class PermissionDependency(SecurityBase):
     async def __call__(self, request: Request):
         for permission in self.permissions:
             cls = permission()
-            if not await cls.has_permission(request=request):
-                raise cls.exception
+            try:
+                if not await cls.has_permission(request=request):
+                    raise cls.exception
+            except:
+                raise

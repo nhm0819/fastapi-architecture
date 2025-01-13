@@ -48,5 +48,8 @@ async def login(
     request: LoginRequest,
     usecase: UserUseCase = Depends(get_user_service),
 ):
-    token = await usecase.login(email=request.email, password=request.password)
-    return {"token": token.token, "refresh_token": token.refresh_token}
+    login_response = await usecase.login(email=request.email, password=request.password)
+    return {
+        "access_token": login_response.access_token,
+        "refresh_token": login_response.refresh_token,
+    }

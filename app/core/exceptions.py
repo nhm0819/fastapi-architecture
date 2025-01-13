@@ -20,6 +20,18 @@ class CustomException(Exception):
             self.message = message
 
 
+class DecodeTokenException(CustomException):
+    code = 401
+    error_code = "TOKEN__DECODE_ERROR"
+    message = "token decode error"
+
+
+class ExpiredTokenException(CustomException):
+    code = 401
+    error_code = "TOKEN__EXPIRE_TOKEN"
+    message = "expired token"
+
+
 async def custom_exception_handler(_: Request, e: CustomException):
     return JSONResponse(
         status_code=e.code,
