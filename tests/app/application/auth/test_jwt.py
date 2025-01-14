@@ -1,12 +1,8 @@
 import pytest
 
 from app.application.auth.v1.service import JwtService
-from app.core.exceptions import DecodeTokenException, ExpiredTokenException
-from tests.support.token import (
-    INVALID_REFRESH_TOKEN,
-    USER_ID_1_ACCESS_TOKEN,
-    USER_ID_1_REFRESH_TOKEN,
-)
+from app.core.exceptions import DecodeTokenException
+from tests.support.token import INVALID_REFRESH_TOKEN, USER_ID_1_REFRESH_TOKEN
 
 jwt_service = JwtService()
 
@@ -21,7 +17,7 @@ async def test_verify_token():
 @pytest.mark.asyncio
 async def test_create_refresh_token_invalid_refresh_token():
     # Given
-    token = USER_ID_1_ACCESS_TOKEN
+    token = INVALID_REFRESH_TOKEN
 
     # When, Then
     with pytest.raises(DecodeTokenException):
@@ -35,7 +31,8 @@ async def test_create_refresh_token():
 
     # When
     sut = await jwt_service.create_refresh_token(
-        access_token=token, refresh_token=token
+        access_token=token,
+        refresh_token=token,
     )
 
     # Then

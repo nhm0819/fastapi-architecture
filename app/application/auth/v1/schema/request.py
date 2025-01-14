@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 
 
 class RefreshTokenRequest(BaseModel):
-    access_token: str = Field(..., description="Token")
+    access_token: str = Field(..., description="Access Token")
     refresh_token: str = Field(..., description="Refresh token")
 
 

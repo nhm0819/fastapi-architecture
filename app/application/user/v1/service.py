@@ -55,7 +55,14 @@ class UserService(UserUseCase):
 
         return True
 
-    async def login(self, *, email: str, password: str) -> LoginResponseDTO:
+    async def login(
+        self,
+        *,
+        email: str,
+        password: str,
+        access_expire_period: int = 60 * 30,
+        refresh_expire_period: int = 60 * 60 * 2,
+    ) -> LoginResponseDTO:
         user = await self.repository.get_user_by_email_and_password(
             email=email,
             password=password,
@@ -65,10 +72,10 @@ class UserService(UserUseCase):
 
         response = LoginResponseDTO(
             access_token=TokenHelper.encode(
-                payload={"user_id": user.id}, expire_period=60 * 30
+                payload={"user_id": user.id}, expire_period=access_expire_period
             ),
             refresh_token=TokenHelper.encode(payload={"sub": "refresh"}),
-            expire_period=60 * 60 * 2,
+            expire_period=refresh_expire_period,
         )
         return response
 

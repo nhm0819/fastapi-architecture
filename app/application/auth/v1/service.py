@@ -18,6 +18,8 @@ class JwtService(JwtUseCase):
         self,
         access_token: str,
         refresh_token: str,
+        access_expire_period: int = 60 * 30,
+        refresh_expire_period: int = 60 * 60 * 2,
     ) -> RefreshTokenResponseDTO:
         decoded_created_token = TokenHelper.decode(token=access_token)
         decoded_refresh_token = TokenHelper.decode(token=refresh_token)
@@ -26,9 +28,12 @@ class JwtService(JwtUseCase):
 
         return RefreshTokenResponseDTO(
             access_token=TokenHelper.encode(
-                payload={"user_id": decoded_created_token.get("user_id")}
+                payload={"user_id": decoded_created_token.get("user_id")},
+                expire_period=access_expire_period,
             ),
-            refresh_token=TokenHelper.encode(payload={"sub": "refresh"}),
+            refresh_token=TokenHelper.encode(
+                payload={"sub": "refresh"}, expire_period=refresh_expire_period
+            ),
         )
 
 

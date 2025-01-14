@@ -5,8 +5,7 @@ from app.application.auth.v1.schema.request import (
     VerifyTokenRequest,
 )
 from app.application.auth.v1.schema.response import RefreshTokenResponseDTO
-from app.application.auth.v1.service import JwtService, get_jwt_service
-from app.domain.auth.dto.jwt import RefreshTokenDTO
+from app.application.auth.v1.service import get_jwt_service
 from app.domain.auth.usecase.jwt import JwtUseCase
 
 auth_router = APIRouter(prefix="/api/v1/auth")

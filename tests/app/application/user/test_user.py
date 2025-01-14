@@ -17,33 +17,6 @@ BASE_URL = "http://test"
 
 
 @pytest.mark.asyncio
-async def test_get_users(session: AsyncSession):
-    # Given
-    user = make_user(
-        id=1,
-        password="password",
-        email="hongmin@id.e",
-        nickname="hongma",
-        is_admin=True,
-        lat=37.123,
-        lng=127.123,
-    )
-    session.add(user)
-    await session.commit()
-
-    # When
-    async with AsyncClient(
-        transport=ASGITransport(app=app), base_url="http://test"
-    ) as client:
-        response = await client.get("/api/v1/user", headers=HEADERS)
-
-    # Then
-    sut = response.json()
-    assert len(sut) == 1
-    assert sut[0] == {"id": 1, "email": "hongmin@id.e", "nickname": "hongma"}
-
-
-@pytest.mark.asyncio
 async def test_create_user_password_does_not_match(session: AsyncSession):
     # Given
     body = {
@@ -188,3 +161,30 @@ async def test_login(session: AsyncSession):
 
     assert "access_token" in sut
     assert "refresh_token" in sut
+
+
+@pytest.mark.asyncio
+async def test_get_users(session: AsyncSession):
+    # Given
+    user = make_user(
+        id=1,
+        password="password",
+        email="hongmin@id.e",
+        nickname="hongma",
+        is_admin=True,
+        lat=37.123,
+        lng=127.123,
+    )
+    session.add(user)
+    await session.commit()
+
+    # When
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as client:
+        response = await client.get("/api/v1/user", headers=HEADERS)
+
+    # Then
+    sut = response.json()
+    assert len(sut) == 1
+    assert sut[0] == {"id": 1, "email": "hongmin@id.e", "nickname": "hongma"}
