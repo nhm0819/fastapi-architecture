@@ -1,0 +1,39 @@
+from abc import ABC, abstractmethod
+
+from sqlalchemy import and_, or_, select
+
+from app.core.db.session import session, session_factory
+from app.core.repository import BaseRepo
+from app.domain.personalization.entity.feature import UserFeature
+
+
+class UserFeatureRepository(BaseRepo[UserFeature]):
+    async def get_user_features(
+        self,
+        *,
+        limit: int = 12,
+        prev: int | None = None,
+    ) -> list[UserFeature]:
+        query = select(UserFeature)
+
+        if prev:
+            query = query.where(UserFeature.id < prev)
+
+        if limit > 12:
+            limit = 12
+
+        query = query.limit(limit)
+        async with session_factory() as read_session:
+            result = await read_session.execute(query)
+
+        return result.scalars().all()
+
+    async def get_feature_by_user_id(self, *, user_id: int) -> UserFeature | None:
+        async with session_factory() as read_session:
+            stmt = await read_session.execute(
+                select(UserFeature).where(UserFeature.user_id == user_id)
+            )
+            return stmt.scalars().first()
+
+    async def save(self, *, user_feature: UserFeature) -> UserFeature:
+        session.add(user_feature)

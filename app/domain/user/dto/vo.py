@@ -1,7 +1,8 @@
 from dataclasses import dataclass
+from typing import Optional
 
 
 @dataclass
 class Location:
-    lat: float = None
-    lng: float = None
+    lat: Optional[float] = None
+    lng: Optional[float] = None

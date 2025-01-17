@@ -6,8 +6,7 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException
 
 import app.core.exceptions as exceptions
-from app.application.auth.v1.router import auth_router
-from app.application.user.v1.router import user_router
+from app.application import auth_router_v1, personalization_router_v1, user_router_v1
 from app.core.fastapi.middlewares import (
     AuthBackend,
     AuthenticationMiddleware,
@@ -16,8 +15,9 @@ from app.core.fastapi.middlewares import (
 
 
 def init_routers(app_: FastAPI) -> None:
-    app_.include_router(user_router)
-    app_.include_router(auth_router)
+    app_.include_router(user_router_v1)
+    app_.include_router(auth_router_v1)
+    app_.include_router(personalization_router_v1)
 
 
 def init_listeners(app_: FastAPI) -> None:

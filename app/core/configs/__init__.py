@@ -16,6 +16,7 @@ class Config(BaseSettings):
     CELERY_BACKEND_URL: str = "redis://:password123@localhost:6379/0"
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
+    EMBEDDING_URL: str = "http://localhost:8002"
 
 
 class TestConfig(Config):

@@ -17,6 +17,13 @@ class UserService(UserUseCase):
     def __init__(self, *, repository: UserRepository):
         self.repository = repository
 
+    async def get_user(
+        self,
+        *,
+        user_id: int,
+    ):
+        return await self.repository.get_user_by_id(user_id=user_id)
+
     async def get_user_list(
         self,
         *,
@@ -41,6 +48,7 @@ class UserService(UserUseCase):
             email=command.email,
             password=command.password1,
             nickname=command.nickname,
+            favorite=command.favorite,
             location=Location(lat=command.lat, lng=command.lng),
         )
         await self.repository.save(user=user)
@@ -81,4 +89,4 @@ class UserService(UserUseCase):
 
 
 def get_user_service():
-    return UserService(repository=UserRepository())
+    return UserService(repository=UserRepository(User))

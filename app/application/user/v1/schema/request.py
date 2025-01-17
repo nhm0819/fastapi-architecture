@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel, Field
 
 
@@ -11,5 +13,6 @@ class CreateUserRequest(BaseModel):
     password1: str = Field(..., description="Password1")
     password2: str = Field(..., description="Password2")
     nickname: str = Field(..., description="Nickname")
-    lat: float = Field(default=None, description="Lat")
-    lng: float = Field(default=None, description="Lng")
+    favorite: str = Field(default=None, description="Favorite")
+    lat: Optional[float] = Field(default=None, description="Lat")
+    lng: Optional[float] = Field(default=None, description="Lng")

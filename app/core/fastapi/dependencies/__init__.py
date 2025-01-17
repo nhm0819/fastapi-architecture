@@ -1,9 +1,10 @@
 from .logging import Logging
 from .permission import (
-    PermissionDependency,
-    IsAuthenticated,
-    IsAdmin,
     AllowAll,
+    IsAdmin,
+    IsAuthenticated,
+    IsOwnID,
+    PermissionDependency,
 )
 
 __all__ = [

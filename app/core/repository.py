@@ -15,7 +15,8 @@ class BaseRepo(Generic[ModelType]):
 
     async def get_by_id(self, id: int) -> ModelType | None:
         query = select(self.model).where(self.model.id == id)
-        return await session.execute(query).scalars().first()
+        result = await session.execute(query)
+        return result.scalars().first()
 
     async def update_by_id(
         self,
@@ -36,5 +37,6 @@ class BaseRepo(Generic[ModelType]):
         await session.execute(query)
 
     async def save(self, model: ModelType) -> ModelType:
-        saved = await session.add(model)
+        saved = session.add(model)
+        # saved = await session.add(model)
         return saved

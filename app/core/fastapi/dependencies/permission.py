@@ -1,3 +1,4 @@
+import re
 from abc import ABC, abstractmethod
 from typing import Type
 
@@ -30,6 +31,17 @@ class IsAuthenticated(BasePermission):
 
     async def has_permission(self, request: Request) -> bool:
         return request.user.id is not None
+
+
+class IsOwnID(BasePermission):
+    exception = UnauthorizedException
+
+    async def has_permission(self, request: Request) -> bool:
+        path = request.url.path
+        pattern = r"/user/(\d+)"
+        match = re.search(pattern, path)
+        user_id = match.group(1)
+        return str(request.user.id) == str(user_id)
 
 
 class IsAdmin(BasePermission):

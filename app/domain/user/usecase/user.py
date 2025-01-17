@@ -7,6 +7,14 @@ from app.domain.user.entity.user import User
 
 class UserUseCase(ABC):
     @abstractmethod
+    async def get_user(
+        self,
+        *,
+        user_id: int,
+    ) -> User:
+        """Get user"""
+
+    @abstractmethod
     async def get_user_list(
         self,
         *,
@@ -17,7 +25,7 @@ class UserUseCase(ABC):
 
     @abstractmethod
     async def create_user(self, *, command: CreateUserDTO) -> None:
-        """Create User"""
+        """Create user"""
 
     @abstractmethod
     async def is_admin(self, *, user_id: int) -> bool:

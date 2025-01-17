@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from sqlalchemy import and_, or_, select
 
 from app.core.db.session import session, session_factory
+from app.core.repository import BaseRepo
 from app.domain.user.entity.user import User
 
 
@@ -43,7 +44,7 @@ class UserRepo(ABC):
         """Save user"""
 
 
-class UserRepository(UserRepo):
+class UserRepository(BaseRepo[User]):
     async def get_users(
         self,
         *,
