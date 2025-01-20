@@ -29,10 +29,10 @@ async def get_user_feature(
 )
 async def create_user_feature(
     user_id: int,
-    command: CreateUserFeatureRequest,
+    # command: CreateUserFeatureRequest,
     usecase: PersonalizationUseCase = Depends(get_personalization_service),
 ) -> CreateUserFeatureResponse:
-    response_model = await usecase.get_user_feature(command=command)
+    response_model = await usecase.get_user_feature(user_id=user_id)
     return response_model
 
 
