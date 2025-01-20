@@ -12,7 +12,7 @@ class UserEmbeddingRequestDTO(BaseModel):
     )
     email: str = Field(..., description="Email")
     nickname: str = Field(..., description="Nickname")
-    favorite: str = Field(..., description="Favorite")
+    favorite: Optional[str] = Field(..., description="Favorite")
     lat: Optional[float] = Field(default=0, description="Lat")
     lng: Optional[float] = Field(default=0, description="Lng")
 
