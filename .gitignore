@@ -175,3 +175,5 @@ cython_debug/
 
 pytest-report.html
 assets
+
+profiling

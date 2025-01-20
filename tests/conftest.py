@@ -12,6 +12,29 @@ from tests.support.test_db_coordinator import TestDbCoordinator
 test_db_coordinator = TestDbCoordinator()
 
 
+import os
+from pathlib import Path
+
+import pytest
+from pyinstrument import Profiler
+
+
+@pytest.fixture(autouse=True)
+def auto_profile(request):
+    ROOT = Path(os.path.dirname(__file__)).parent
+    PROFILE_ROOT = ROOT.joinpath("profiling")
+    # Turn profiling on
+    profiler = Profiler()
+    profiler.start()
+
+    yield  # Run test
+
+    profiler.stop()
+    PROFILE_ROOT.mkdir(exist_ok=True)
+    results_file = PROFILE_ROOT / f"{request.node.name}.html"
+    profiler.write_html(results_file)
+
+
 # def pytest_collection_modifyitems(items):
 #     pytest_asyncio_tests = (
 #         item for item in items if pytest_asyncio.is_async_test(item)
