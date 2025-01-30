@@ -10,8 +10,9 @@ from locust import HttpUser, between, events, tag, task
 from tests.support.test_db_coordinator import TestDbCoordinator
 
 HOST = "http://localhost:8000"
-test_db_coordinator = TestDbCoordinator()
 print("WRITER DB URL :", os.getenv("WRITER_DB_URL"))
+
+test_db_coordinator = TestDbCoordinator()
 test_db_coordinator.apply_alembic()
 print("DB tables Created")
 
@@ -55,7 +56,6 @@ class AppUser(HttpUser):
         ) as login_response:
             tokens = login_response.json()
             assert login_response.status_code == 200, "LOGIN ERROR"
-        print("Login")
 
         self.headers = {"Authorization": f"Bearer {tokens.get('access_token')}"}
 
@@ -73,10 +73,10 @@ class AppUser(HttpUser):
         ) as response:
             data = response.json()
             assert response.status_code == 200
-        print("Create User Feature")
 
     @task
     def update_user_feature(self):
+        print("update user feature start")
         params = {
             "protocol": self.protocol,
             "size": self.size,
@@ -84,10 +84,11 @@ class AppUser(HttpUser):
         }
         with self.client.patch(
             f"/api/v1/personalization/user",
-            name="create new user feature",
+            name="update user feature",
             catch_response=True,
+            headers=self.headers,
             json=params,
         ) as response:
             data = response.json()
             assert response.status_code == 200
-        print("Update feature")
+        print("Updatee feature")
