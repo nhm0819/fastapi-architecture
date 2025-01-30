@@ -1,13 +1,23 @@
+import logging
 from typing import Union
 
+import grpc
 import httpx
 import numpy as np
 
 from app.application.personalization.v1.enums import BigEndian
 from app.application.personalization.v1.exception import (
     EmbeddingException,
+    EmbeddingGrpcException,
     UserFeatureAlreadyExistException,
     UserFeatureNotFoundException,
+)
+from app.application.personalization.v1.proto.embedding_pb2 import (
+    EmbeddingUserRequest,
+    EmbeddingUserResponse,
+)
+from app.application.personalization.v1.proto.embedding_pb2_grpc import (
+    EmbeddingServiceStub,
 )
 from app.application.personalization.v1.schema.request import (
     CreateUserFeatureRequest,
@@ -130,6 +140,7 @@ class PersonalizationService(PersonalizationUseCase):
         *,
         user_id: int | str,
         command: CreateUserFeatureRequest,
+        stub: EmbeddingServiceStub | None = None,
     ) -> GetUserFeatureResponse:
         size = command.size
         protocol = command.protocol
@@ -159,6 +170,7 @@ class PersonalizationService(PersonalizationUseCase):
             user_id=user_id,
             protocol=protocol,
             command=embedding_command,
+            stub=stub,
         )
 
         await self.user_feature_repository.update_by_id(
@@ -202,6 +214,7 @@ class PersonalizationService(PersonalizationUseCase):
         user_id: Union[int, str],
         protocol: str,
         command: UserEmbeddingRequest,
+        stub: EmbeddingServiceStub | None = None,
     ) -> GetUserEmbeddingResponse:
         params = command.model_dump()
 
@@ -235,10 +248,19 @@ class PersonalizationService(PersonalizationUseCase):
                 )
                 user_vector = np_vector.astype(np.float64).tolist()
 
-        else:
-            # TODO : grpc embedding
-            np_vector = None
-            raise "Not yet grpc"
+        elif protocol.lower() == "grpc":
+            try:
+                request_proto = EmbeddingUserRequest(**params)
+                response = await stub.EmbeddingUser(request_proto)
+                bvector = response.bvector
+            except grpc.aio.AioRpcError as e:
+                logging.error(f"gRPC Error: {e.code()} - {e.details()}")
+                raise EmbeddingGrpcException(message=e.details())
+
+            np_vector = np.expand_dims(
+                np.frombuffer(bvector, dtype=BigEndian[command.dtype].value), axis=0
+            )
+            user_vector = np_vector.astype(np.float64).tolist()
 
         return GetUserEmbeddingResponse(
             bvector=bvector,
@@ -250,5 +272,4 @@ def get_personalization_service():
     return PersonalizationService(
         user_feature_repository=UserFeatureRepository(UserFeature),
         user_repository=UserRepository(),
-        # user_service=get_user_service(),
     )

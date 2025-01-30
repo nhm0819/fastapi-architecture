@@ -80,9 +80,13 @@ async def update_user_feature(
     scope = request.scope
     current_user = scope["user"]
     user_id = current_user.id
+    stub = None
+    if command.protocol == "grpc":
+        stub = request.app.state.embedding_stub
     response_model = await usecase.update_user_feature(
         user_id=user_id,
         command=command,
+        stub=stub,
     )
     return response_model
 

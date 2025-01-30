@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+service EmbeddingService {
+  rpc EmbeddingUser (EmbeddingUserRequest) returns (EmbeddingUserResponse);
+}
+
+message EmbeddingUserRequest {
+    string dtype = 1;
+    int32 size = 2;
+    string email = 3;
+    string nickname = 4;
+    string favorite = 5;
+    float lat = 6;
+    float lng = 7;
+}
+
+message EmbeddingUserResponse {
+  bytes bvector = 1;
+}

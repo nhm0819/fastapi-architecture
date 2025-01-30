@@ -1,3 +1,4 @@
+import os
 import uuid
 
 import dotenv
@@ -10,6 +11,7 @@ from tests.support.test_db_coordinator import TestDbCoordinator
 
 HOST = "http://localhost:8000"
 test_db_coordinator = TestDbCoordinator()
+print("WRITER DB URL :", os.getenv("WRITER_DB_URL"))
 test_db_coordinator.apply_alembic()
 print("DB tables Created")
 

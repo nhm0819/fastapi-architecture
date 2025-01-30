@@ -1,3 +1,5 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware import Middleware
@@ -7,6 +9,7 @@ from starlette.exceptions import HTTPException
 
 import app.core.exceptions as exceptions
 from app.application import auth_router_v1, personalization_router_v1, user_router_v1
+from app.application.personalization.v1.proto.client import get_embedding_channel_stub
 from app.core.configs import config
 from app.core.fastapi.middlewares import (
     AuthBackend,
@@ -73,6 +76,21 @@ def make_middleware() -> list[Middleware]:
     return middleware
 
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    print("🔗 Opening gRPC channel...")
+    embedding_channel, embedding_stub = get_embedding_channel_stub()
+
+    # grpc channel, stub 저장
+    app.state.embedding_channel = embedding_channel
+    app.state.embedding_stub = embedding_stub
+
+    yield
+
+    print("🔌 Closing gRPC channel...")
+    await embedding_channel.close()
+
+
 def create_app() -> FastAPI:
     app_ = FastAPI(
         title="FastAPI Architecture",
@@ -80,9 +98,14 @@ def create_app() -> FastAPI:
         version="0.0.0",
         docs_url="/docs",
         redoc_url="/redoc",
+        lifespan=lifespan,
         middleware=make_middleware(),
     )
+
+    # routers
     init_routers(app_=app_)
+
+    # listeners
     init_listeners(app_=app_)
     return app_
 

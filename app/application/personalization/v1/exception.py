@@ -23,3 +23,9 @@ class UserFeatureAlreadyExistException(CustomException):
     code = 404
     error_code = "USER_FEATURE__EXIST"
     message = "user feature is already exists"
+
+
+class EmbeddingGrpcException(CustomException):
+    code = 404
+    error_code = "Embedding GRPC server ERROR"
+    message = "Embedding GRPC server ERROR"

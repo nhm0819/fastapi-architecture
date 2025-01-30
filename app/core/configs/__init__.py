@@ -17,6 +17,8 @@ class Config(BaseSettings):
     REDIS_HOST: str = "localhost"
     REDIS_PORT: int = 6379
     EMBEDDING_URL: str = "http://localhost:8002"
+    EMBEDDING_GRPC_URL: str = "localhost:8004"
+    PROFILING: bool = False
 
 
 class TestConfig(Config):
