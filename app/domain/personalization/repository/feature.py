@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from sqlalchemy import and_, or_, select
+from sqlalchemy import and_, delete, or_, select
 
 from app.core.db.session import session, session_factory
 from app.core.repository import BaseRepo
@@ -8,6 +8,9 @@ from app.domain.personalization.entity.feature import UserFeature
 
 
 class UserFeatureRepository(BaseRepo[UserFeature]):
+    def __init__(self, model: UserFeature = UserFeature):
+        super().__init__(model=model)
+
     async def get_user_features(
         self,
         *,
@@ -37,3 +40,7 @@ class UserFeatureRepository(BaseRepo[UserFeature]):
 
     async def save(self, *, user_feature: UserFeature) -> UserFeature:
         session.add(user_feature)
+
+    async def delete_feature_by_user_id(self, *, user_id: int) -> UserFeature | None:
+        query = delete(self.model).where(self.model.user_id == user_id)
+        return await session.execute(query)

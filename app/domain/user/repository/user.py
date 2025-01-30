@@ -27,10 +27,6 @@ class UserRepo(ABC):
         """Get user by email or nickname"""
 
     @abstractmethod
-    async def get_user_by_id(self, *, user_id: int) -> User | None:
-        """Get user by id"""
-
-    @abstractmethod
     async def get_user_by_email_and_password(
         self,
         *,
@@ -45,6 +41,9 @@ class UserRepo(ABC):
 
 
 class UserRepository(BaseRepo[User]):
+    def __init__(self, model: User = User):
+        super().__init__(model=model)
+
     async def get_users(
         self,
         *,
@@ -75,11 +74,6 @@ class UserRepository(BaseRepo[User]):
             stmt = await read_session.execute(
                 select(User).where(or_(User.email == email, User.nickname == nickname)),
             )
-            return stmt.scalars().first()
-
-    async def get_user_by_id(self, *, user_id: int) -> User | None:
-        async with session_factory() as read_session:
-            stmt = await read_session.execute(select(User).where(User.id == user_id))
             return stmt.scalars().first()
 
     async def get_user_by_email_and_password(

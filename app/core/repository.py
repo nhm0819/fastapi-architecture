@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from sqlalchemy import delete, select, update
 
 from app.core.db.model import Base
-from app.core.db.session import session
+from app.core.db.session import session, session_factory
 
 ModelType = TypeVar("ModelType", bound=Base)
 
@@ -15,7 +15,8 @@ class BaseRepo(Generic[ModelType]):
 
     async def get_by_id(self, id: int) -> ModelType | None:
         query = select(self.model).where(self.model.id == id)
-        result = await session.execute(query)
+        async with session_factory() as read_session:
+            result = await read_session.execute(query)
         return result.scalars().first()
 
     async def update_by_id(

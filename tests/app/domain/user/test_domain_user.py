@@ -107,7 +107,7 @@ async def test_create_user():
 @pytest.mark.asyncio
 async def test_is_admin_user_not_exist():
     # Given
-    repository_mock.get_user_by_id.return_value = None
+    repository_mock.get_by_id.return_value = None
     user_service.repository = repository_mock
 
     # When
@@ -123,7 +123,7 @@ async def test_is_admin_user_is_not_admin():
 
     user = make_user(**users[1])
     user.is_admin = False
-    repository_mock.get_user_by_id.return_value = user
+    repository_mock.get_by_id.return_value = user
     user_service.repository = repository_mock
 
     # When
@@ -137,7 +137,7 @@ async def test_is_admin_user_is_not_admin():
 async def test_is_admin():
     # Given
     user = make_user(**users[1])
-    repository_mock.get_user_by_id.return_value = user
+    repository_mock.get_by_id.return_value = user
     user_service.repository = repository_mock
 
     # When

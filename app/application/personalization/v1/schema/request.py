@@ -2,10 +2,8 @@ from typing import Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from app.domain.personalization.dto.feature import CreateUserFeatureDTO
 
-
-class UserEmbeddingRequestDTO(BaseModel):
+class UserEmbeddingRequest(BaseModel):
     size: int = Field(default=2048, description="Vector size : (1, size)")
     dtype: Literal["float16", "float32", "float64"] = Field(
         default="float16", description="Vector Data Type (float16, float32, float64)"
@@ -19,5 +17,15 @@ class UserEmbeddingRequestDTO(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class CreateUserFeatureRequest(CreateUserFeatureDTO):
+class CreateUserFeatureRequest(BaseModel):
+    protocol: Literal["http", "http-octet", "grpc"] = Field(
+        default="http", description="http, http-octet or grpc"
+    )
+    size: int = Field(default=2048, description="Vector size : (1, size)")
+    dtype: Literal["float16", "float32", "float64"] = Field(
+        default="float16", description="Vector Data Type (float16, float32, float64)"
+    )
+
+
+class UpdateUserFeatureRequest(CreateUserFeatureRequest):
     pass

@@ -22,7 +22,7 @@ class UserService(UserUseCase):
         *,
         user_id: int,
     ):
-        return await self.repository.get_user_by_id(user_id=user_id)
+        return await self.repository.get_by_id(id=user_id)
 
     async def get_user_list(
         self,
@@ -54,7 +54,7 @@ class UserService(UserUseCase):
         await self.repository.save(user=user)
 
     async def is_admin(self, *, user_id: int) -> bool:
-        user = await self.repository.get_user_by_id(user_id=user_id)
+        user = await self.repository.get_by_id(id=user_id)
         if not user:
             return False
 

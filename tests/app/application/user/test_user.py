@@ -20,7 +20,7 @@ BASE_URL = "http://test"
 
 
 @pytest.mark.asyncio
-async def test_get_users(session: AsyncSession):
+async def test_get_user_list(session: AsyncSession):
     # Given
     user = make_user(**users[1])
     session.add(user)
@@ -30,7 +30,7 @@ async def test_get_users(session: AsyncSession):
     async with AsyncClient(
         transport=ASGITransport(app=app), base_url="http://test"
     ) as client:
-        response = await client.get("/api/v1/user", headers=HEADERS)
+        response = await client.get("/api/v1/user/list", headers=HEADERS)
 
     # Then
     sut = response.json()

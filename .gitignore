@@ -177,3 +177,4 @@ pytest-report.html
 assets
 
 profiling
+.env.locust

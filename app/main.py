@@ -7,17 +7,19 @@ from starlette.exceptions import HTTPException
 
 import app.core.exceptions as exceptions
 from app.application import auth_router_v1, personalization_router_v1, user_router_v1
+from app.core.configs import config
 from app.core.fastapi.middlewares import (
     AuthBackend,
     AuthenticationMiddleware,
+    PyInstrumentMiddleWare,
     SQLAlchemyMiddleware,
 )
 
 
 def init_routers(app_: FastAPI) -> None:
-    app_.include_router(user_router_v1)
-    app_.include_router(auth_router_v1)
-    app_.include_router(personalization_router_v1)
+    app_.include_router(user_router_v1, tags=["user"])
+    app_.include_router(auth_router_v1, tags=["auth"])
+    app_.include_router(personalization_router_v1, tags=["personalization"])
 
 
 def init_listeners(app_: FastAPI) -> None:
@@ -61,6 +63,13 @@ def make_middleware() -> list[Middleware]:
         ),
         Middleware(SQLAlchemyMiddleware),
     ]
+    if config.PROFILING:
+        middleware.insert(
+            0,
+            Middleware(
+                PyInstrumentMiddleWare,
+            ),
+        )
     return middleware
 
 

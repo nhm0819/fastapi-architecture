@@ -1,3 +1,4 @@
+import os
 from typing import Any, List, Union
 
 from sqlalchemy import Engine, create_engine, inspect, text
@@ -21,7 +22,8 @@ class TestDbCoordinator:
 
     def apply_alembic(self) -> None:
         alembic_cfg = AlembicConfig("alembic.ini")
-        command.upgrade(alembic_cfg, "head")
+        command.ensure_version(alembic_cfg)
+        # command.upgrade(alembic_cfg, "head")
 
     def truncate_all(self) -> None:
         url = config.WRITER_DB_URL.replace("aiomysql", "pymysql")

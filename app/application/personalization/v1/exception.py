@@ -13,6 +13,12 @@ class UserFeatureNotFoundException(CustomException):
     message = "user feature not found"
 
 
+class UserFeatureNotFoundException(CustomException):
+    code = 404
+    error_code = "USER_FEATURE__NOT_FOUND"
+    message = "user feature not found"
+
+
 class UserFeatureAlreadyExistException(CustomException):
     code = 404
     error_code = "USER_FEATURE__EXIST"

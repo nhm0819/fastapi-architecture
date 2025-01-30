@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Request
 
 from app.application.user.v1.schema.request import CreateUserRequest, LoginRequest
 from app.application.user.v1.schema.response import (
@@ -15,7 +15,7 @@ user_router = APIRouter(prefix="/api/v1/user")
 
 
 @user_router.get(
-    "",
+    "/list",
     response_model=list[GetUserListDTO],
     dependencies=[Depends(PermissionDependency([IsAdmin]))],
 )
@@ -28,16 +28,32 @@ async def get_user_list(
 
 
 @user_router.get(
-    "/{user_id}",
+    "/me",
     response_model=GetUserResponseDTO,
     dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
 )
-async def get_user(
-    user_id: int,
+async def get_user_me(
+    request: Request,
     usecase: UserUseCase = Depends(get_user_service),
 ):
+    scope = request.scope
+    print(scope)
+    user_id = scope["user"]["id"]
     user = await usecase.get_user(user_id=user_id)
     return GetUserResponseDTO.model_validate(user)
+
+
+# @user_router.get(
+#     "/{user_id}",
+#     response_model=GetUserResponseDTO,
+#     dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
+# )
+# async def get_user(
+#     user_id: int,
+#     usecase: UserUseCase = Depends(get_user_service),
+# ):
+#     user = await usecase.get_user(user_id=user_id)
+#     return GetUserResponseDTO.model_validate(user)
 
 
 @user_router.post(
