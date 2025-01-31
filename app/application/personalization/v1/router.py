@@ -67,6 +67,31 @@ async def create_user_feature(
     return response_model
 
 
+@personalization_router.post(
+    "/user/octet",
+    response_class=OctetStreamResponse,
+    dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
+)
+async def create_user_feature_binary(
+    request: Request,
+    command: CreateUserFeatureRequest,
+    usecase: PersonalizationUseCase = Depends(get_personalization_service),
+) -> OctetStreamResponse:
+    scope = request.scope
+    current_user = scope["user"]
+    user_id = current_user.id
+    stub = None
+    if command.protocol == "grpc":
+        stub = request.app.state.embedding_stub
+    bvector = await usecase.create_user_feature(
+        user_id=user_id,
+        command=command,
+        stub=stub,
+        return_binary=True,
+    )
+    return OctetStreamResponse(content=bvector)
+
+
 @personalization_router.patch(
     "/user",
     response_model=UserEmbeddingResponse,
@@ -89,6 +114,32 @@ async def update_user_feature(
         stub=stub,
     )
     return response_model
+
+
+@personalization_router.patch(
+    "/user/octet",
+    response_class=OctetStreamResponse,
+    dependencies=[Depends(PermissionDependency([IsAuthenticated]))],
+)
+async def get_user_feature_binary(
+    request: Request,
+    command: UpdateUserFeatureRequest,
+    usecase: PersonalizationUseCase = Depends(get_personalization_service),
+) -> UserEmbeddingResponse:
+    scope = request.scope
+    current_user = scope["user"]
+    user_id = current_user.id
+    stub = None
+    if command.protocol == "grpc":
+        stub = request.app.state.embedding_stub
+
+    bvector = await usecase.update_user_feature(
+        user_id=user_id,
+        command=command,
+        stub=stub,
+        return_binary=True,
+    )
+    return OctetStreamResponse(content=bvector)
 
 
 @personalization_router.delete(

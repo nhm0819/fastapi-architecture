@@ -8,6 +8,7 @@ class UserEmbeddingResponse(BaseModel):
 
 
 class GetUserEmbeddingResponse(UserEmbeddingResponse):
+    user_vector: Optional[List[List[float]]] = Field(..., description="Vector[n, dims]")
     bvector: bytes = Field(..., description="bytes vector")
 
 
@@ -17,6 +18,10 @@ class GetUserFeatureResponse(BaseModel):
         default="float16", description="Vector Data Type (float16, float32, float64)"
     )
     user_vector: List[List[float]] = Field(default=None, description="Vector[n, dims]")
+
+
+class GetUserFeatureBinaryResponse(BaseModel):
+    bvector: bytes = Field(..., description="bytes vector")
 
 
 class DeleteUserFeatureResponse(BaseModel):

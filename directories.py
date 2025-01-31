@@ -3,6 +3,10 @@ from pathlib import Path
 
 root = Path(os.path.dirname(__file__))
 
+logs = root.joinpath("logs")
+if not logs.exists():
+    logs.mkdir(parents=True, exist_ok=True)
+
 profiles = root.joinpath("profiling")
 
 profiles_pytest = profiles.joinpath("pytest")

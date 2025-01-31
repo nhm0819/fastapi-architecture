@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 from sqlalchemy import and_, delete, or_, select
 
 from app.core.db.session import session, session_factory
+from app.core.helpers.cache import Cache, CacheTag
 from app.core.repository import BaseRepo
 from app.domain.personalization.entity.feature import UserFeature
 
@@ -32,11 +33,22 @@ class UserFeatureRepository(BaseRepo[UserFeature]):
         return result.scalars().all()
 
     async def get_feature_by_user_id(self, *, user_id: int) -> UserFeature | None:
+        cached_user_feature = await Cache.backend.get(
+            key=f"get_feature_by_user_id:user_id:{str(user_id)}"
+        )
+        if cached_user_feature:
+            return cached_user_feature
+
         async with session_factory() as read_session:
             stmt = await read_session.execute(
                 select(UserFeature).where(UserFeature.user_id == user_id)
             )
-            return stmt.scalars().first()
+            user_feature = stmt.scalars().first()
+
+        await Cache.backend.set(
+            response=user_feature, key=f"get_feature_by_user_id:user_id:{str(user_id)}"
+        )
+        return user_feature
 
     async def save(self, *, user_feature: UserFeature) -> UserFeature:
         session.add(user_feature)

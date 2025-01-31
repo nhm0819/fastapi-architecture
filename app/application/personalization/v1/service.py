@@ -90,7 +90,9 @@ class PersonalizationService(PersonalizationUseCase):
         *,
         user_id: int | str,
         command: CreateUserFeatureRequest,
-    ) -> GetUserFeatureResponse:
+        stub: EmbeddingServiceStub | None = None,
+        return_binary: bool = False,
+    ) -> GetUserFeatureResponse | bytes:
         size = command.size
         protocol = command.protocol
         dtype = command.dtype
@@ -119,6 +121,8 @@ class PersonalizationService(PersonalizationUseCase):
             user_id=user_id,
             protocol=protocol,
             command=embedding_command,
+            stub=stub,
+            return_binary=return_binary,
         )
 
         await self.user_feature_repository.save(
@@ -130,9 +134,12 @@ class PersonalizationService(PersonalizationUseCase):
             )
         )
 
-        return GetUserFeatureResponse(
-            user_vector=embedding_result.user_vector, size=size, dtype=dtype
-        )
+        if return_binary:
+            return embedding_result.bvector
+        else:
+            return GetUserFeatureResponse(
+                user_vector=embedding_result.user_vector, size=size, dtype=dtype
+            )
 
     @Transactional()
     async def update_user_feature(
@@ -141,7 +148,8 @@ class PersonalizationService(PersonalizationUseCase):
         user_id: int | str,
         command: CreateUserFeatureRequest,
         stub: EmbeddingServiceStub | None = None,
-    ) -> GetUserFeatureResponse:
+        return_binary: bool = False,
+    ) -> GetUserFeatureResponse | bytes:
         size = command.size
         protocol = command.protocol
         dtype = command.dtype
@@ -171,6 +179,7 @@ class PersonalizationService(PersonalizationUseCase):
             protocol=protocol,
             command=embedding_command,
             stub=stub,
+            return_binary=return_binary,
         )
 
         await self.user_feature_repository.update_by_id(
@@ -178,9 +187,12 @@ class PersonalizationService(PersonalizationUseCase):
             params={"bvector": embedding_result.bvector},
         )
 
-        return GetUserFeatureResponse(
-            user_vector=embedding_result.user_vector, size=size, dtype=dtype
-        )
+        if return_binary:
+            return embedding_result.bvector
+        else:
+            return GetUserFeatureResponse(
+                user_vector=embedding_result.user_vector, size=size, dtype=dtype
+            )
 
     @Transactional()
     async def delete_user_feature(
@@ -215,6 +227,7 @@ class PersonalizationService(PersonalizationUseCase):
         protocol: str,
         command: UserEmbeddingRequest,
         stub: EmbeddingServiceStub | None = None,
+        return_binary: bool = False,
     ) -> GetUserEmbeddingResponse:
         params = command.model_dump()
 
@@ -243,6 +256,12 @@ class PersonalizationService(PersonalizationUseCase):
                 if resp.status_code != 200:
                     raise EmbeddingException(message=resp.text)
                 bvector = resp.content
+                if return_binary:
+                    return GetUserEmbeddingResponse(
+                        bvector=bvector,
+                        user_vector=None,
+                    )
+
                 np_vector = np.expand_dims(
                     np.frombuffer(bvector, dtype=BigEndian[command.dtype].value), axis=0
                 )
@@ -256,6 +275,12 @@ class PersonalizationService(PersonalizationUseCase):
             except grpc.aio.AioRpcError as e:
                 logging.error(f"gRPC Error: {e.code()} - {e.details()}")
                 raise EmbeddingGrpcException(message=e.details())
+
+            if return_binary:
+                return GetUserEmbeddingResponse(
+                    bvector=bvector,
+                    user_vector=None,
+                )
 
             np_vector = np.expand_dims(
                 np.frombuffer(bvector, dtype=BigEndian[command.dtype].value), axis=0

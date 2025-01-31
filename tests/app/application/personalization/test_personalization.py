@@ -215,8 +215,8 @@ async def test_personalization_get_user_http_octet(session: AsyncSession):
             headers=HEADERS,
         )
 
-    # Then
-    sut = response.content
+        # Then
+        sut = response.content
 
     np_vector = np.expand_dims(
         np.frombuffer(sut, dtype=BigEndian[user_feature.dtype].value),
@@ -227,3 +227,46 @@ async def test_personalization_get_user_http_octet(session: AsyncSession):
     assert 0.9 < np.std(np_vector) < 1.1
 
     assert sut == user_feature.bvector
+
+
+@pytest.mark.asyncio
+async def test_personalization_update_user_http_octet(session: AsyncSession):
+
+    # Given
+    user = make_user(**users[1])
+    user_feature = make_user_feature(**user_features[1])
+
+    # Given
+    session.add(user)
+    session.add(user_feature)
+    await session.commit()
+
+    user_id = user_feature.user_id
+    protocol = "http-octet"
+    size = 2048
+    dtype = "float16"
+    body = {
+        "size": size,
+        "dtype": dtype,
+    }
+
+    # When
+    async with AsyncClient(
+        transport=ASGITransport(app=app), base_url="http://test"
+    ) as client:
+        response = await client.patch(
+            f"/api/v1/personalization/user/octet", headers=HEADERS, json=body
+        )
+
+    assert response.status_code == 200
+
+    # Then
+    sut = response.content
+
+    np_vector = np.expand_dims(
+        np.frombuffer(sut, dtype=BigEndian[user_feature.dtype].value),
+        axis=0,
+    )
+
+    assert -0.1 < np.mean(np_vector) < 0.1
+    assert 0.9 < np.std(np_vector) < 1.1

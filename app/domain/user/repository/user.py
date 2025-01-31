@@ -52,7 +52,6 @@ class UserRepository(BaseRepo[User]):
         cached_user = await Cache.backend.get(key=f"user_id:{str(id)}")
         if cached_user:
             return cached_user
-
         query = select(self.model).where(self.model.id == id)
         async with session_factory() as read_session:
             result = await read_session.execute(query)

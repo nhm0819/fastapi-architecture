@@ -29,7 +29,8 @@ class PersonalizationUseCase(ABC):
         *,
         user_id: int | str,
         command: CreateUserFeatureDTO,
-    ) -> GetUserFeatureDTO:
+        return_binary: bool,
+    ) -> GetUserFeatureDTO | bytes:
         """Create User Feature"""
 
     @abstractmethod
@@ -38,7 +39,8 @@ class PersonalizationUseCase(ABC):
         *,
         user_id: int | str,
         command: CreateUserFeatureDTO,
-    ) -> GetUserFeatureDTO:
+        return_binary: bool,
+    ) -> GetUserFeatureDTO | bytes:
         """Update User Feature"""
 
     @abstractmethod
