@@ -28,12 +28,11 @@ async def test_permission_dependency_is_authenticated():
 @patch("app.application.user.v1.service.UserService", new_callable=AsyncMock)
 async def test_permission_dependency_is_admin_user_is_not_admin(user_service_mock):
     # Given
+    user_service_mock.is_admin.return_value = False  ### TODO : check mocking
     dependency = PermissionDependency(permissions=[IsAdmin])
     request = AsyncMock(spec=Request)
-    user_id = 1
+    user_id = 2
     request.user = Mock(id=user_id)
-
-    user_service_mock.is_admin.return_value = False
 
     # When, Then
     with pytest.raises(UnauthorizedException):

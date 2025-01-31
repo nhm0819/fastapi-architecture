@@ -6,9 +6,9 @@ from app.application.user.v1.exception import (
 from app.core.db.transactional import Transactional
 from app.core.helpers.token import TokenHelper
 from app.domain.user.dto.login import LoginResponseDTO
-from app.domain.user.dto.user import CreateUserDTO
+from app.domain.user.dto.user import CreateUserDTO, UserRead
 from app.domain.user.dto.vo import Location
-from app.domain.user.entity.user import User, UserRead
+from app.domain.user.entity.user import User
 from app.domain.user.repository.user import UserRepository
 from app.domain.user.usecase.user import UserUseCase
 

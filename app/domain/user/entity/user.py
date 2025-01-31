@@ -14,7 +14,7 @@ class User(Base, TimestampMixin):
     __tablename__ = "user"
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    password: Mapped[str] = mapped_column(String(255), nullable=False)
+    password: Mapped[str] = mapped_column(String(255), nullable=False, deferred=True)
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     nickname: Mapped[str] = mapped_column(String(255), nullable=False, unique=True)
     favorite: Mapped[str] = mapped_column(String(255), nullable=True)
@@ -32,21 +32,18 @@ class User(Base, TimestampMixin):
         password: str,
         nickname: str,
         favorite: str | None = None,
+        is_admin: bool | None = False,
         location: Location | None = None,
+        lat: float | None = None,
+        lng: float | None = None,
     ) -> "User":
+        if not location:
+            location = location(lat=lat, lng=lng)
         return cls(
             email=email,
             password=password,
             nickname=nickname,
             favorite=favorite,
-            is_admin=False,
+            is_admin=is_admin,
             location=location,
         )
-
-
-class UserRead(BaseModel):
-    model_config = ConfigDict(from_attributes=True)
-
-    id: int = Field(..., title="USER ID")
-    email: str = Field(..., title="Email")
-    nickname: str = Field(..., title="Nickname")

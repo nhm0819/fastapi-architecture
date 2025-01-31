@@ -37,7 +37,6 @@ async def get_user_me(
     usecase: UserUseCase = Depends(get_user_service),
 ):
     scope = request.scope
-    print(scope)
     user_id = scope["user"]["id"]
     user = await usecase.get_user(user_id=user_id)
     return GetUserResponseDTO.model_validate(user)

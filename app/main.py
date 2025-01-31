@@ -17,6 +17,8 @@ from app.core.fastapi.middlewares import (
     PyInstrumentMiddleWare,
     SQLAlchemyMiddleware,
 )
+from app.core.helpers.cache import Cache, CustomKeyMaker, RedisBackend
+from app.core.helpers.cache.base import BaseBackend, BaseKeyMaker
 
 
 def init_routers(app_: FastAPI) -> None:
@@ -35,6 +37,10 @@ def init_listeners(app_: FastAPI) -> None:
     app_.add_exception_handler(
         exceptions.CustomException, exceptions.custom_exception_handler
     )
+
+
+def init_cache(backend: BaseBackend, key_maker: BaseKeyMaker) -> None:
+    Cache.init(backend=backend, key_maker=key_maker)
 
 
 def on_auth_error(request: Request, exc: Exception):
@@ -107,6 +113,10 @@ def create_app() -> FastAPI:
 
     # listeners
     init_listeners(app_=app_)
+
+    # init cache server (redis)
+    init_cache(backend=RedisBackend(), key_maker=CustomKeyMaker())
+
     return app_
 
 

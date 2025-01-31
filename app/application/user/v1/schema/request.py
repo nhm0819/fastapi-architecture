@@ -14,5 +14,6 @@ class CreateUserRequest(BaseModel):
     password2: str = Field(..., description="Password2")
     nickname: str = Field(..., description="Nickname")
     favorite: str = Field(default=None, description="Favorite")
+    is_admin: bool = Field(default=False, description="Is Admin")
     lat: Optional[float] = Field(default=None, description="Lat")
     lng: Optional[float] = Field(default=None, description="Lng")

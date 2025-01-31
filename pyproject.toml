@@ -12,7 +12,6 @@ uvicorn = "^0.34.0"
 sqlalchemy = "^2.0.36"
 pydantic-settings = "^2.7.0"
 aiomysql = "^0.2.0"
-redis = "^5.2.1"
 pyyaml = "^6.0.2"
 ujson = "^5.10.0"
 pre-commit = "^4.0.1"
@@ -30,6 +29,8 @@ pyinstrument = "^5.0.1"
 pyjwt = "^2.10.1"
 grpcio = "^1.70.0"
 grpcio-tools = "^1.70.0"
+redis = "^5.2.1"
+cryptography = "^44.0.0"
 
 
 [build-system]

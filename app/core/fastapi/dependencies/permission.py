@@ -28,6 +28,7 @@ class BasePermission(ABC):
 
 class IsAuthenticated(BasePermission):
     exception = UnauthorizedException
+    exception.message = "Not Authenticated"
 
     async def has_permission(self, request: Request) -> bool:
         return request.user.id is not None
@@ -35,6 +36,7 @@ class IsAuthenticated(BasePermission):
 
 class IsAdmin(BasePermission):
     exception = UnauthorizedException
+    exception.message = "Not Admin"
 
     async def has_permission(
         self,

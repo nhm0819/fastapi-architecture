@@ -24,7 +24,13 @@ async def test_get_user_list():
     user = make_user(**users[1])
     limit = 10
     prev = 0
-    user = UserRead(id=user.id, email=user.email, nickname=user.nickname)
+    user = UserRead(
+        id=user.id,
+        email=user.email,
+        nickname=user.nickname,
+        favorite=user.favorite,
+        is_admin=user.is_admin,
+    )
     repository_mock.get_users.return_value = [user]
     user_service.repository = repository_mock
 
@@ -49,6 +55,7 @@ async def test_create_user_password_does_not_match():
         password1=user.password,
         password2=user.password + "2",
         nickname=user.nickname,
+        is_admin=user.is_admin,
         lat=user.location.lat,
         lng=user.location.lng,
     )
@@ -67,6 +74,7 @@ async def test_create_user_duplicated():
         password1=user.password,
         password2=user.password,
         nickname=user.nickname,
+        is_admin=user.is_admin,
         lat=user.location.lat,
         lng=user.location.lng,
     )
@@ -90,6 +98,7 @@ async def test_create_user():
         password2=user.password,
         nickname=user.nickname,
         favorite=user.favorite,
+        is_admin=user.is_admin,
         lat=user.location.lat,
         lng=user.location.lng,
     )

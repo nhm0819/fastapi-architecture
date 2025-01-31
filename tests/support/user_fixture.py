@@ -37,8 +37,8 @@ users = {
     2: {
         "id": 2,
         "password": "password2",
-        "email": "hongmin2@id.e",
-        "nickname": "hongma2",
+        "email": "hong@id.e",
+        "nickname": "hong",
         "favorite": "drinking",
         "is_admin": False,
         "lat": None,

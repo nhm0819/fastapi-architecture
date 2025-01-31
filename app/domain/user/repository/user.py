@@ -1,9 +1,13 @@
+import datetime
 from abc import ABC, abstractmethod
 
 from sqlalchemy import and_, or_, select
+from sqlalchemy.orm import load_only
 
 from app.core.db.session import session, session_factory
+from app.core.helpers.cache import Cache, CacheTag
 from app.core.repository import BaseRepo
+from app.domain.user.dto.user import UserRead
 from app.domain.user.entity.user import User
 
 
@@ -43,6 +47,19 @@ class UserRepo(ABC):
 class UserRepository(BaseRepo[User]):
     def __init__(self, model: User = User):
         super().__init__(model=model)
+
+    async def get_by_id(self, id: int) -> User | None:
+        cached_user = await Cache.backend.get(key=f"user_id:{str(id)}")
+        if cached_user:
+            return cached_user
+
+        query = select(self.model).where(self.model.id == id)
+        async with session_factory() as read_session:
+            result = await read_session.execute(query)
+        user = result.scalars().first()
+
+        await Cache.backend.set(response=user, key=f"user_id:{str(id)}")
+        return user
 
     async def get_users(
         self,
