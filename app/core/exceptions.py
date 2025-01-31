@@ -7,7 +7,7 @@ from starlette.exceptions import HTTPException
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
-logger = logging.getLogger("uvicorn")
+logger = logging.getLogger("uvicorn.error")
 
 
 class CustomException(Exception):
@@ -33,6 +33,7 @@ class ExpiredTokenException(CustomException):
 
 
 async def custom_exception_handler(_: Request, e: CustomException):
+    logger.error(f"Exception => {type(e).__name__}: {str(e)}\n{traceback.format_exc()}")
     return JSONResponse(
         status_code=e.code,
         content={"error_code": e.error_code, "message": e.message},

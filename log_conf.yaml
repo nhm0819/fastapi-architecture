@@ -1,0 +1,77 @@
+version: 1
+disable_existing_loggers: false
+
+formatters:
+  default:
+    "()": uvicorn.logging.DefaultFormatter
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  access:
+    "()": uvicorn.logging.AccessFormatter
+    format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+handlers:
+  # consoles
+  default-console:
+    class: logging.StreamHandler
+    formatter: default
+    stream: ext://sys.stdout
+  # files
+  info-file:
+    class: logging.handlers.TimedRotatingFileHandler
+    formatter: default
+    filename: logs/info.log
+    when: midnight
+    interval: 1
+    backupCount: 7
+    encoding: utf8
+  error-file:
+    class: logging.handlers.TimedRotatingFileHandler
+    formatter: default
+    filename: logs/error.log
+    when: midnight
+    interval: 1
+    backupCount: 7
+    encoding: utf8
+  access-file:
+    class: logging.handlers.TimedRotatingFileHandler
+    formatter: default
+    filename: logs/access.log
+    when: midnight
+    interval: 1
+    backupCount: 7
+    encoding: utf8
+
+root:
+  level: INFO
+  handlers: [default-console, info-file]
+  propagate: yes
+
+loggers:
+  fastapi:
+    level: INFO
+    handlers: [default-console, info-file]
+    propagate: no
+  uvicorn:
+    level: INFO
+    handlers: [default-console, info-file]
+    propagate: no
+  uvicorn.access:
+    level: INFO
+    handlers: [default-console, access-file]
+    propagate: no
+  uvicorn.error:
+    level: INFO
+    handlers: [default-console, error-file]
+    propagate: no
+  sqlalchemy:
+    level: INFO
+    handlers: [default-console, info-file]
+    propagate: no
+  aiosqlite:
+    level: ERROR
+    handlers: [default-console, info-file]
+    propagate: no
+  httpx:
+    level: ERROR
+    handlers: [default-console, info-file]
+    propagate: no

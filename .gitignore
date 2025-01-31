@@ -178,3 +178,4 @@ assets
 
 profiling
 .env.locust
+logs
